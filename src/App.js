@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+import "./styles.css";
 import {
   Radar,
   RadarChart,
@@ -458,7 +459,7 @@ function BasicInfoSection({ basicInfo, setBasicInfo, onComplete }) {
           onChange: (value) => update("diagnosisCategory", value),
           required: true,
           options: ["見積", "請求", "残業"],
-        ),
+        }),
         h(
           "button",
           { className: "button button-primary basic-submit", type: "submit" },
@@ -593,7 +594,7 @@ function Hero({ onStart }) {
         h(
           "div",
           { className: "illustration-card" },
-          h("img", { src: "./assets/mudanavi-reference.png", alt: "ムダなびの参考ビジュアル" }),
+          h("img", { src: "/assets/mudanavi-reference.png", alt: "ムダなびの参考ビジュアル" }),
           h("div", { className: "floating-check" }, Icon(CheckCircle2, { size: 22 }), "流れを整理")
         )
       )

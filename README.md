@@ -4,27 +4,29 @@
 
 ## 使い方
 
-`index.html` をブラウザで開いてください。
+ローカルで確認する場合は、依存関係を入れてViteを起動します。
 
-React、Recharts、lucide-react は ESM CDN から読み込みます。
+```bash
+npm install
+npm run dev
+```
+
+React、Recharts、lucide-react はViteでビルドして配信します。
 
 ## Vercel配布
 
-このアプリは静的サイトとしてそのままVercelへ公開できます。
+このアプリはViteでビルドしてVercelへ公開します。
 
 ### GitHub連携で公開する場合
 
-1. `mudanavi-app` フォルダをGitHubリポジトリへアップロードします。
-2. Vercelで `Add New...` → `Project` を選びます。
-3. 対象リポジトリを選びます。
-4. Framework Preset は `Other` のままでOKです。
-5. Build Command は空欄、Output Directory も空欄でOKです。
-6. `Deploy` を押します。
+このリポジトリはVercel連携済みなので、GitHubへpushすると自動デプロイされます。
+
+- Build Command: `npm run build`
+- Output Directory: `dist`
 
 ### Vercel CLIで公開する場合
 
 ```bash
-cd outputs/mudanavi-app
 npx vercel
 ```
 
@@ -37,6 +39,7 @@ npx vercel --prod
 ## 構成
 
 - `index.html`: アプリのエントリ
+- `package.json`: Viteビルド設定
 - `src/App.js`: 診断フォーム、集計、結果表示、CTA
 - `src/config.js`: Google Sheets送信先URLとLINE CTA URL
 - `src/styles.css`: レスポンシブUI
