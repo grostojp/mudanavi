@@ -88,12 +88,18 @@ const questions = [
 ].map(([axisId, text], index) => ({ id: index + 1, axisId, text }));
 
 const scoreLabels = {
-  1: "かなり課題あり",
-  2: "課題あり",
-  3: "ふつう",
-  4: "良い",
-  5: "とても良い",
+  1: "まったくできていない",
+  2: "少しできている",
+  3: "半分くらいできている",
+  4: "ほぼできている",
+  5: "十分できている",
 };
+
+const nextStepOptions = [
+  "診断結果だけ確認する",
+  "詳しい改善ポイントを相談したい",
+  "社内で検討してから相談したい",
+];
 
 const STORAGE_KEY = "mudanaviSubmissions";
 
@@ -101,37 +107,30 @@ const initialBasicInfo = {
   companyName: "",
   name: "",
   email: "",
-  phone: "",
-  industry: "",
-  employeeCount: "",
-  problem: "",
-  wantsConsultation: "",
+  diagnosisCategory: "",
 };
 
 function Icon(IconComponent, props = {}) {
   return h(IconComponent, { size: 20, strokeWidth: 2.2, ...props });
 }
 
-function toSubmissionRecord({ basicInfo, answers, result, existingId }) {
+function toSubmissionRecord({ basicInfo, answers, result, nextStep = "", existingId }) {
   return {
     id: existingId || `mudanavi-${Date.now()}`,
     回答日時: new Date().toISOString(),
     会社名: basicInfo.companyName,
     お名前: basicInfo.name,
     メールアドレス: basicInfo.email,
-    電話番号: basicInfo.phone,
-    業種: basicInfo.industry,
-    従業員数: basicInfo.employeeCount,
-    困りごと: basicInfo.problem,
+    電話番号: "",
+    業種: "",
+    従業員数: "",
+    困りごと: "",
+    診断カテゴリ: basicInfo.diagnosisCategory,
     基本情報: {
       会社名: basicInfo.companyName,
       お名前: basicInfo.name,
       メールアドレス: basicInfo.email,
-      電話番号: basicInfo.phone,
-      業種: basicInfo.industry,
-      従業員数: basicInfo.employeeCount,
-      困りごと: basicInfo.problem,
-      個別相談希望: basicInfo.wantsConsultation,
+      診断カテゴリ: basicInfo.diagnosisCategory,
     },
     "15問の回答": questions.map((question) => ({
       質問番号: question.id,
@@ -144,7 +143,8 @@ function toSubmissionRecord({ basicInfo, answers, result, existingId }) {
       スコア: axis.score,
     })),
     一番低い軸: result.weakest.label,
-    個別相談希望: basicInfo.wantsConsultation,
+    個別相談希望: nextStep,
+    次のステップ: nextStep,
   };
 }
 
@@ -214,6 +214,7 @@ function App() {
   const [savedRecord, setSavedRecord] = useState(null);
   const [savedCount, setSavedCount] = useState(0);
   const [sheetStatus, setSheetStatus] = useState({ status: "idle", message: "" });
+  const [nextStep, setNextStep] = useState("");
 
   const result = useMemo(() => {
     const scores = axes.map((axis) => {
@@ -260,14 +261,16 @@ function App() {
     setSavedRecord(null);
     setSavedCount(0);
     setSheetStatus({ status: "idle", message: "" });
+    setNextStep("");
     document.getElementById("basic-info")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const showResults = async () => {
+  const showResults = () => {
     const record = toSubmissionRecord({
       basicInfo,
       answers,
       result,
+      nextStep,
       existingId: savedRecord?.id,
     });
     const count = saveSubmission(record);
@@ -275,10 +278,26 @@ function App() {
     setSavedRecord(record);
     setSavedCount(count);
     setShowResult(true);
-    setSheetStatus({ status: "sending", message: "Googleスプレッドシートへ送信中です" });
+    setSheetStatus({ status: "idle", message: "" });
     window.setTimeout(() => {
       document.getElementById("result")?.scrollIntoView({ behavior: "smooth" });
     }, 60);
+  };
+
+  const handleNextStep = async (selectedStep) => {
+    const record = toSubmissionRecord({
+      basicInfo,
+      answers,
+      result,
+      nextStep: selectedStep,
+      existingId: savedRecord?.id,
+    });
+    const count = saveSubmission(record);
+
+    setNextStep(selectedStep);
+    setSavedRecord(record);
+    setSavedCount(count);
+    setSheetStatus({ status: "sending", message: "Googleスプレッドシートへ送信中です" });
 
     const nextSheetStatus = await submitToGoogleSheet(record);
     setSheetStatus(nextSheetStatus);
@@ -315,6 +334,7 @@ function App() {
             setInfoSubmitted(true);
             setShowResult(false);
             setSheetStatus({ status: "idle", message: "" });
+            setNextStep("");
             window.setTimeout(() => {
               document.getElementById("diagnosis")?.scrollIntoView({ behavior: "smooth" });
             }, 60);
@@ -377,6 +397,8 @@ function App() {
           savedRecord,
           savedCount,
           sheetStatus,
+          nextStep,
+          onNextStep: handleNextStep,
         })
       : null
   );
@@ -401,20 +423,9 @@ function BasicInfoSection({ basicInfo, setBasicInfo, onComplete }) {
       h(
         "div",
         { className: "basic-info-copy" },
-        h("p", { className: "eyebrow" }, "診断開始前の基本情報"),
-        h("h2", null, "診断結果とあわせて、Googleスプレッドシートへ保存します"),
-        h(
-          "p",
-          null,
-          "基本情報と診断結果をセットで記録します。送信先が未設定の場合も、ブラウザ内には控えとして保存されます。"
-        ),
-        h(
-          "ul",
-          { className: "save-list" },
-          h("li", null, "回答日時・基本情報・15問回答を保存"),
-          h("li", null, "5軸スコアと一番低い軸も自動記録"),
-          h("li", null, "個別相談希望の有無を結果と紐づけ")
-        )
+        h("p", { className: "eyebrow" }, "診断開始前"),
+        h("h2", null, "診断結果の送付先をご入力ください"),
+        h("p", null, "診断結果の確認と、必要に応じたご案内のためにご入力ください。")
       ),
       h(
         "form",
@@ -441,63 +452,12 @@ function BasicInfoSection({ basicInfo, setBasicInfo, onComplete }) {
           required: true,
           placeholder: "example@company.jp",
         }),
-        h(FormField, {
-          label: "電話番号",
-          type: "tel",
-          value: basicInfo.phone,
-          onChange: (value) => update("phone", value),
-          required: true,
-          placeholder: "03-0000-0000",
-        }),
-        h(FormField, {
-          label: "業種",
-          value: basicInfo.industry,
-          onChange: (value) => update("industry", value),
-          required: true,
-          placeholder: "例：製造業、建設業、卸売業",
-        }),
         h(SelectField, {
-          label: "従業員数",
-          value: basicInfo.employeeCount,
-          onChange: (value) => update("employeeCount", value),
+          label: "診断カテゴリ",
+          value: basicInfo.diagnosisCategory,
+          onChange: (value) => update("diagnosisCategory", value),
           required: true,
-          options: ["1〜5名", "6〜10名", "11〜30名", "31〜50名", "51〜100名", "101名以上"],
-        }),
-        h(TextareaField, {
-          label: "今一番困っていること",
-          value: basicInfo.problem,
-          onChange: (value) => update("problem", value),
-          required: true,
-          placeholder: "例：追加作業の請求漏れが多い、見積作成に時間がかかる",
-        }),
-        h(
-          "fieldset",
-          { className: "consult-choice" },
-          h("legend", null, "個別相談を希望するか", h("span", null, "必須")),
-          h(
-            "div",
-            { className: "consult-choice-row" },
-            ["希望する", "検討したい", "希望しない"].map((option) =>
-              h(
-                "label",
-                {
-                  className: `consult-option ${
-                    basicInfo.wantsConsultation === option ? "is-selected" : ""
-                  }`,
-                  key: option,
-                },
-                h("input", {
-                  type: "radio",
-                  name: "wantsConsultation",
-                  value: option,
-                  checked: basicInfo.wantsConsultation === option,
-                  required: true,
-                  onChange: () => update("wantsConsultation", option),
-                }),
-                option
-              )
-            )
-          )
+          options: ["見積", "請求", "残業"],
         ),
         h(
           "button",
@@ -650,7 +610,15 @@ function FlowCard({ icon: IconComponent, label, tone }) {
   );
 }
 
-function ResultSection({ result, onReset, savedRecord, savedCount, sheetStatus }) {
+function ResultSection({
+  result,
+  onReset,
+  savedRecord,
+  savedCount,
+  sheetStatus,
+  nextStep,
+  onNextStep,
+}) {
   const { scores, weakest, totalAverage } = result;
 
   return h(
@@ -728,11 +696,37 @@ function ResultSection({ result, onReset, savedRecord, savedCount, sheetStatus }
           )
         )
       ),
+      h(NextStepSection, { nextStep, onNextStep }),
       h(Consultation),
       h(
         "div",
         { className: "result-actions" },
         h("button", { className: "button button-secondary", type: "button", onClick: onReset }, Icon(RotateCcw, { size: 18 }), "もう一度診断する")
+      )
+    )
+  );
+}
+
+function NextStepSection({ nextStep, onNextStep }) {
+  return h(
+    "section",
+    { className: "next-step-card" },
+    h("p", { className: "eyebrow" }, "次のステップ"),
+    h("h2", null, "次のステップを選んでください"),
+    h(
+      "div",
+      { className: "next-step-options" },
+      nextStepOptions.map((option) =>
+        h(
+          "button",
+          {
+            className: `next-step-option ${nextStep === option ? "is-selected" : ""}`,
+            key: option,
+            type: "button",
+            onClick: () => onNextStep(option),
+          },
+          option
+        )
       )
     )
   );

@@ -663,8 +663,9 @@ h1 span::first-letter {
 }
 
 .score-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
+  line-height: 1.35;
 }
 
 .question-axis {
@@ -698,6 +699,7 @@ h1 span::first-letter {
 .result-copy,
 .chart-card,
 .score-board,
+.next-step-card,
 .consultation {
   border: 1px solid rgba(9, 36, 74, 0.1);
   border-radius: 24px;
@@ -706,6 +708,7 @@ h1 span::first-letter {
 }
 
 .result-copy,
+.next-step-card,
 .consultation {
   padding: 28px;
 }
@@ -832,6 +835,47 @@ h1 span::first-letter {
 .score-value small {
   color: var(--muted);
   font-weight: 800;
+}
+
+.next-step-card {
+  grid-column: 1 / -1;
+}
+
+.next-step-card h2 {
+  margin-bottom: 18px;
+  color: var(--navy);
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.28;
+  letter-spacing: 0;
+}
+
+.next-step-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.next-step-option {
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+  font-weight: 900;
+  text-align: center;
+  transition: border 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.next-step-option:hover {
+  transform: translateY(-1px);
+}
+
+.next-step-option.is-selected {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
 }
 
 .consultation {
@@ -968,6 +1012,10 @@ h1 span::first-letter {
 
   .score-label {
     font-size: 13px;
+  }
+
+  .next-step-options {
+    grid-template-columns: 1fr;
   }
 
   .button {

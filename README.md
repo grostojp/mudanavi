@@ -14,15 +14,17 @@ React、Recharts、lucide-react は ESM CDN から読み込みます。
 
 ### GitHub連携で公開する場合
 
-このリポジトリはVercel連携済みなので、GitHubへpushすると自動デプロイされます。
-
-- Framework Preset: `Other`
-- Build Command: 空欄
-- Output Directory: 空欄
+1. `mudanavi-app` フォルダをGitHubリポジトリへアップロードします。
+2. Vercelで `Add New...` → `Project` を選びます。
+3. 対象リポジトリを選びます。
+4. Framework Preset は `Other` のままでOKです。
+5. Build Command は空欄、Output Directory も空欄でOKです。
+6. `Deploy` を押します。
 
 ### Vercel CLIで公開する場合
 
 ```bash
+cd outputs/mudanavi-app
 npx vercel
 ```
 
@@ -49,7 +51,7 @@ npx vercel --prod
 - 保存キー: `mudanaviSubmissions`
 - ローカル保存: ブラウザ内の `localStorage`
 - Google Sheets保存: `src/config.js` の `GOOGLE_SHEETS_WEB_APP_URL` にApps ScriptのWebアプリURLを設定
-- 保存項目: 回答日時、会社名、お名前、メールアドレス、電話番号、業種、従業員数、困りごと、15問の回答、5軸スコア、一番低い軸、個別相談希望
+- 保存項目: 回答日時、会社名、お名前、メールアドレス、診断カテゴリ、15問の回答、5軸スコア、一番低い軸、次のステップ
 - 一部のプレビュー環境で `localStorage` が制限される場合は、ページ内メモリにフォールバックします。
 
 ## Google Sheets連携手順
