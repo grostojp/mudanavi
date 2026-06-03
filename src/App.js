@@ -23,7 +23,7 @@ import {
   Sparkles,
   WalletCards,
 } from "lucide-react";
-import { GOOGLE_SHEETS_WEB_APP_URL, LINE_HINT_URL } from "./config.js";
+import { CONSULTATION_URL, GOOGLE_SHEETS_WEB_APP_URL, LINE_HINT_URL } from "./config.js";
 
 const h = React.createElement;
 
@@ -759,7 +759,7 @@ function Consultation() {
       ),
       h(
         "a",
-        { className: "button button-primary", href: "mailto:consult@example.com?subject=ムダなび個別相談の申込み" },
+        { className: "button button-primary", href: CONSULTATION_URL, target: "_blank", rel: "noreferrer" },
         Icon(Send, { size: 18 }),
         "診断結果をもとに個別相談する"
       )
