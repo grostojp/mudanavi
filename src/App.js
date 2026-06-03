@@ -568,6 +568,7 @@ function Hero({ onStart }) {
       h(
         "div",
         { className: "hero-copy" },
+        h("p", { className: "company-label" }, "グロストラボ合同会社"),
         h("div", { className: "brand-pill" }, h("span", { className: "brand-mark", "aria-hidden": "true" }), "ムダなび"),
         h("h1", null, "見積・請求・残業の", h("span", null, "ムダ診断")),
         h(
@@ -748,7 +749,7 @@ function Consultation() {
       h(
         "p",
         null,
-        "見積・請求・残業のどこで止まりやすいかを確認し、今ある業務フローに合わせた改善ステップを提案します。"
+        "グロストラボ合同会社が、見積・請求・残業のどこで止まりやすいかを確認し、今ある業務フローに合わせた改善ステップを提案します。"
       )
     ),
     h(
@@ -758,7 +759,7 @@ function Consultation() {
         "a",
         { className: "button button-line", href: LINE_HINT_URL, target: "_blank", rel: "noreferrer" },
         Icon(MessageCircle, { size: 18 }),
-        "LINEで改善ヒントを受け取る"
+        "グロストラボ合同会社からLINEで改善ヒントを受け取る"
       ),
       h(
         "a",

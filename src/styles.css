@@ -91,6 +91,18 @@ a {
   letter-spacing: 0;
 }
 
+.company-label {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  border: 1px solid rgba(9, 36, 74, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 900;
+}
+
 .brand-mark {
   position: relative;
   display: inline-block;
@@ -894,6 +906,11 @@ h1 span::first-letter {
 .consult-actions {
   display: grid;
   gap: 12px;
+}
+
+.consult-actions .button {
+  white-space: normal;
+  text-align: center;
 }
 
 .consult-sparkle {
