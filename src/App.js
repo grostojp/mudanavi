@@ -176,7 +176,15 @@ function saveSubmission(record) {
 }
 
 async function submitToGoogleSheet(record) {
+  console.log("[ムダなび] 送信開始", {
+    id: record.id,
+    companyName: record.会社名,
+    nextStep: record.次のステップ || "",
+  });
+  console.log("[ムダなび] 送信URL", GOOGLE_SHEETS_WEB_APP_URL || "(未設定)");
+
   if (!GOOGLE_SHEETS_WEB_APP_URL) {
+    console.warn("[ムダなび] 送信中止: Google Sheets送信先が未設定です");
     return {
       status: "not_configured",
       message: "Google Sheets送信先が未設定です",
@@ -193,11 +201,18 @@ async function submitToGoogleSheet(record) {
       body: JSON.stringify(record),
     });
 
+    console.log("[ムダなび] 送信結果", {
+      status: "sent",
+      note: "no-cors modeのためHTTPレスポンス本文は取得できません",
+    });
+
     return {
       status: "sent",
       message: "Googleスプレッドシートへ送信しました",
     };
   } catch (error) {
+    console.error("[ムダなび] 送信エラー", error);
+
     return {
       status: "failed",
       message: `Googleスプレッドシート送信に失敗しました: ${error.message}`,
@@ -267,6 +282,7 @@ function App() {
   };
 
   const showResults = async () => {
+    console.log("[ムダなび] 診断結果表示: Google Sheets送信処理を開始します");
     const record = toSubmissionRecord({
       basicInfo,
       answers,
@@ -289,6 +305,7 @@ function App() {
   };
 
   const handleNextStep = async (selectedStep) => {
+    console.log("[ムダなび] 次のステップ選択: Google Sheets更新処理を開始します", selectedStep);
     const record = toSubmissionRecord({
       basicInfo,
       answers,
