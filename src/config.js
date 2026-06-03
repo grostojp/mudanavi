@@ -1,3 +1,3 @@
 export const GOOGLE_SHEETS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbyan_KCNtcDzLEaJawsF2TEG1ZoWkO6IhZRWzZK9Oi-lC889uic_jZFGy7QqqNOO_N7/exec";
+  "https://script.google.com/macros/s/AKfycbyOCtGzuywUh3apEUqpdXyTMoK0DwtbO5Dv_AcJkQ_HgHmCH5m3ibP_a5yPjPu58fY3gQ/exec";
 export const LINE_HINT_URL = "https://lin.ee/T7kjqiV";
