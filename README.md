@@ -73,4 +73,4 @@ npx vercel --prod
 ## CTA設定
 
 - LINEで改善ヒントを受け取る: `src/config.js` の `LINE_HINT_URL`
-- 診断結果をもとに個別相談する: `src/config.js` の `CONSULTATION_URL`
+- 診断結果をもとに個別相談する: `src/App.js` 内の `mailto:consult@example.com`

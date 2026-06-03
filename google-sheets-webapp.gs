@@ -2,6 +2,7 @@ const SPREADSHEET_ID = '1OEw1WMNdB5GuZi-ikqUBkybECpjgGpABEecoZ2qQ980';
 const SHEET_NAME = '診断結果';
 
 const HEADERS = [
+  '送信ID',
   '回答日時',
   '会社名',
   'お名前',
@@ -44,8 +45,13 @@ function doPost(e) {
     const payload = JSON.parse(e.postData.contents || '{}');
     const sheet = getOrCreateSheet_();
     const row = buildRow_(payload);
+    const targetRow = findExistingRow_(sheet, payload.id);
 
-    sheet.appendRow(row);
+    if (targetRow) {
+      sheet.getRange(targetRow, 1, 1, row.length).setValues([row]);
+    } else {
+      sheet.appendRow(row);
+    }
 
     return ContentService
       .createTextOutput(JSON.stringify({ ok: true }))
@@ -68,6 +74,9 @@ function getOrCreateSheet_() {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS);
     sheet.setFrozenRows(1);
+  } else {
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sheet.setFrozenRows(1);
   }
 
   return sheet;
@@ -78,6 +87,7 @@ function buildRow_(payload) {
   const scores = payload['5軸スコア'] || [];
 
   return [
+    payload.id || '',
     payload['回答日時'] || '',
     payload['会社名'] || '',
     payload['お名前'] || '',
@@ -100,6 +110,17 @@ function buildRow_(payload) {
     payload['個別相談希望'] || '',
     JSON.stringify(payload),
   ];
+}
+
+function findExistingRow_(sheet, id) {
+  if (!id || sheet.getLastRow() < 2) {
+    return null;
+  }
+
+  const ids = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+  const index = ids.findIndex((row) => row[0] === id);
+
+  return index === -1 ? null : index + 2;
 }
 
 function getScore_(scores, axisName) {

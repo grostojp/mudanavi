@@ -23,7 +23,7 @@ import {
   Sparkles,
   WalletCards,
 } from "lucide-react";
-import { CONSULTATION_URL, GOOGLE_SHEETS_WEB_APP_URL, LINE_HINT_URL } from "./config.js";
+import { GOOGLE_SHEETS_WEB_APP_URL, LINE_HINT_URL } from "./config.js";
 
 const h = React.createElement;
 
@@ -266,7 +266,7 @@ function App() {
     document.getElementById("basic-info")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const showResults = () => {
+  const showResults = async () => {
     const record = toSubmissionRecord({
       basicInfo,
       answers,
@@ -279,10 +279,13 @@ function App() {
     setSavedRecord(record);
     setSavedCount(count);
     setShowResult(true);
-    setSheetStatus({ status: "idle", message: "" });
+    setSheetStatus({ status: "sending", message: "Googleスプレッドシートへ保存中です" });
     window.setTimeout(() => {
       document.getElementById("result")?.scrollIntoView({ behavior: "smooth" });
     }, 60);
+
+    const nextSheetStatus = await submitToGoogleSheet(record);
+    setSheetStatus(nextSheetStatus);
   };
 
   const handleNextStep = async (selectedStep) => {
@@ -759,7 +762,7 @@ function Consultation() {
       ),
       h(
         "a",
-        { className: "button button-primary", href: CONSULTATION_URL, target: "_blank", rel: "noreferrer" },
+        { className: "button button-primary", href: "mailto:consult@example.com?subject=ムダなび個別相談の申込み" },
         Icon(Send, { size: 18 }),
         "診断結果をもとに個別相談する"
       )
